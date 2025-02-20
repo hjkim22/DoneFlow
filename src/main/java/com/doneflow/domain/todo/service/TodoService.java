@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -45,20 +46,18 @@ public class TodoService {
   }
 
   // 할 일 수정
+  @Transactional
   public TodoResponseDto updateTodo(Long id, TodoRequestDto requestDto) {
     Todo todo = todoRepository.findById(id)
         .orElseThrow(() -> new EntityNotFoundException("해당 Todo를 찾을 수 없습니다. id=" + id));
 
-    todo = Todo.builder()
-        .id(todo.getId())  // 기존 ID 유지
-        .title(requestDto.getTitle())
-        .content(requestDto.getContent())
-        .completed(requestDto.isCompleted())
-        .dueDate(requestDto.getDueDate())
-        .category(requestDto.getCategory())
-        .build();
+    todo.setTitle(requestDto.getTitle());
+    todo.setContent(requestDto.getContent());
+    todo.setCompleted(requestDto.isCompleted());
+    todo.setDueDate(requestDto.getDueDate());
+    todo.setCategory(requestDto.getCategory());
 
-    return TodoResponseDto.from(todoRepository.save(todo));
+    return TodoResponseDto.from(todo);
   }
 
   // 할 일 삭제
