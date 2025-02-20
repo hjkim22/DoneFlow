@@ -1,6 +1,6 @@
 package com.doneflow.domain.todo.entity;
 
-import com.doneflow.common.entity.BaseTimeEntity;
+import com.doneflow.common.base.BaseTimeEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

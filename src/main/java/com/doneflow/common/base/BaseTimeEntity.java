@@ -1,4 +1,4 @@
-package com.doneflow.common.entity;
+package com.doneflow.common.base;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
