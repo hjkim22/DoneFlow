@@ -1,5 +1,7 @@
 package com.doneflow.domain.todo.controller;
 
+import com.doneflow.common.exception.CustomException;
+import com.doneflow.common.exception.ErrorCode;
 import com.doneflow.domain.todo.dto.TodoCompletedDto;
 import com.doneflow.domain.todo.dto.TodoRequestDto;
 import com.doneflow.domain.todo.dto.TodoResponseDto;
@@ -73,5 +75,12 @@ public class TodoController {
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void deleteTodo(@PathVariable("id") Long id) {
     todoService.deleteTodo(id);
+  }
+
+  // ================== 예외 처리 테스트 ==================
+
+  @GetMapping("/test/server-error")
+  public void testServerError() {
+    throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR);
   }
 }
