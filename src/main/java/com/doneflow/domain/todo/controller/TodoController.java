@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -41,6 +42,24 @@ public class TodoController {
   @GetMapping
   public List<TodoResponseDto> getAllTodos() {
     return todoService.getAllTodos();
+  }
+
+  // 완료 할 일 목록 조회
+  @GetMapping("/completed")
+  public List<TodoResponseDto> getCompletedTodos() {
+    return todoService.getAllCompletedTodos();
+  }
+
+  // 미완료 할 일 목록 조회
+  @GetMapping("/pending")
+  public List<TodoResponseDto> getNotCompletedTodos() {
+    return todoService.getAllPendingTodos();
+  }
+
+  // 카테고리별 할 일 목록 조회
+  @GetMapping("/category")
+  public List<TodoResponseDto> getTodoByCategory(@RequestParam String category) {
+    return todoService.getAllTodosByCategory(category);
   }
 
   // 할 일 수정

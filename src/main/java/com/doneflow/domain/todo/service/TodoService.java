@@ -45,6 +45,27 @@ public class TodoService {
         .collect(Collectors.toList());
   }
 
+  // 완료 할 일 목록 조회
+  public List<TodoResponseDto> getAllCompletedTodos() {
+    return todoRepository.findAllByCompletedTrue().stream()
+        .map(TodoResponseDto::from)
+        .collect(Collectors.toList());
+  }
+
+  // 미완료 할 일 목록 조회
+  public List<TodoResponseDto> getAllPendingTodos() {
+    return todoRepository.findAllByCompletedFalse().stream()
+        .map(TodoResponseDto::from)
+        .collect(Collectors.toList());
+  }
+
+  // 카테고리별 할 일 목록 조회
+  public List<TodoResponseDto> getAllTodosByCategory(String category) {
+    return todoRepository.findAllByCategory(category).stream()
+        .map(TodoResponseDto::from)
+        .collect(Collectors.toList());
+  }
+
   // 할 일 수정
   @Transactional
   public TodoResponseDto updateTodo(Long id, TodoRequestDto requestDto) {
