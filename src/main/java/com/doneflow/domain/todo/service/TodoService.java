@@ -1,10 +1,11 @@
 package com.doneflow.domain.todo.service;
 
+import com.doneflow.common.exception.CustomException;
+import com.doneflow.common.exception.ErrorCode;
 import com.doneflow.domain.todo.dto.TodoRequestDto;
 import com.doneflow.domain.todo.dto.TodoResponseDto;
 import com.doneflow.domain.todo.entity.Todo;
 import com.doneflow.domain.todo.repository.TodoRepository;
-import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +34,7 @@ public class TodoService {
   // 할 일 조회
   public TodoResponseDto getTodoById(Long id) {
     Todo todo = todoRepository.findById(id)
-        .orElseThrow(() -> new EntityNotFoundException("해당 Todo를 찾을 수 없습니다. id=" + id));
+        .orElseThrow(() -> new CustomException(ErrorCode.TODO_NOT_FOUND));
 
     return TodoResponseDto.from(todo);
   }
@@ -61,7 +62,7 @@ public class TodoService {
   @Transactional
   public TodoResponseDto updateTodo(Long id, TodoRequestDto requestDto) {
     Todo todo = todoRepository.findById(id)
-        .orElseThrow(() -> new EntityNotFoundException("해당 Todo를 찾을 수 없습니다. id=" + id));
+        .orElseThrow(() -> new CustomException(ErrorCode.TODO_NOT_FOUND));
 
     todo.setTitle(requestDto.getTitle());
     todo.setContent(requestDto.getContent());
@@ -75,7 +76,7 @@ public class TodoService {
   // 할 일 삭제
   public void deleteTodo(Long id) {
     Todo todo = todoRepository.findById(id)
-        .orElseThrow(() -> new EntityNotFoundException("해당 Todo를 찾을 수 없습니다. id=" + id));
+        .orElseThrow(() -> new CustomException(ErrorCode.TODO_NOT_FOUND));
 
     todoRepository.delete(todo);
   }
