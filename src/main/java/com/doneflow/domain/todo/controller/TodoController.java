@@ -1,5 +1,6 @@
 package com.doneflow.domain.todo.controller;
 
+import com.doneflow.domain.todo.dto.TodoCompletedDto;
 import com.doneflow.domain.todo.dto.TodoRequestDto;
 import com.doneflow.domain.todo.dto.TodoResponseDto;
 import com.doneflow.domain.todo.service.TodoService;
@@ -62,9 +63,9 @@ public class TodoController {
   // 할 일 완료 여부 수정
   @PatchMapping("/{id}/completed")
   public TodoResponseDto updateCompletedStatus(
-      @PathVariable Long id,
-      @RequestBody Boolean completed) {
-    return todoService.updateCompletedStatus(id, completed);
+      @PathVariable("id") Long id,
+      @Valid @RequestBody TodoCompletedDto requestDto) {
+    return todoService.updateCompletedStatus(id, requestDto.getCompleted());
   }
 
   // 할 일 삭제
