@@ -29,6 +29,7 @@ public class Todo extends BaseTimeEntity {
   @Column(columnDefinition = "TEXT")
   private String content; // 내용
 
+  @Column(nullable = false)
   @Builder.Default
   private boolean completed = false; // 완료 여부
 
