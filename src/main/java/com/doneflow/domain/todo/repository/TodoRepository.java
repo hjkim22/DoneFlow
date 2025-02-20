@@ -8,9 +8,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface TodoRepository extends JpaRepository<Todo, Long> {
 
-  List<Todo> findAllByCompletedTrue();
-
-  List<Todo> findAllByCompletedFalse();
+  List<Todo> findAllByCompleted(Boolean completed);
 
   List<Todo> findAllByCategory(String category);
 }

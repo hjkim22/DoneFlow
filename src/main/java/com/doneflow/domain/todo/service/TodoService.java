@@ -38,23 +38,14 @@ public class TodoService {
     return TodoResponseDto.from(todo);
   }
 
-  // 할 일 목록 조회
-  public List<TodoResponseDto> getAllTodos() {
-    return todoRepository.findAll().stream()
-        .map(TodoResponseDto::from)
-        .collect(Collectors.toList());
-  }
-
-  // 완료 할 일 목록 조회
-  public List<TodoResponseDto> getAllCompletedTodos() {
-    return todoRepository.findAllByCompletedTrue().stream()
-        .map(TodoResponseDto::from)
-        .collect(Collectors.toList());
-  }
-
-  // 미완료 할 일 목록 조회
-  public List<TodoResponseDto> getAllPendingTodos() {
-    return todoRepository.findAllByCompletedFalse().stream()
+  // 할 일 목록 조회(완료 여부)
+  public List<TodoResponseDto> getTodosByStatus(Boolean completed) {
+    if (completed == null) {
+      return todoRepository.findAll().stream()
+          .map(TodoResponseDto::from)
+          .collect(Collectors.toList());
+    }
+    return todoRepository.findAllByCompleted(completed).stream()
         .map(TodoResponseDto::from)
         .collect(Collectors.toList());
   }

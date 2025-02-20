@@ -38,22 +38,11 @@ public class TodoController {
     return todoService.getTodoById(id);
   }
 
-  // 할 일 목록 조회
+  // 할 일 목록 조회(완료 여부)
   @GetMapping
-  public List<TodoResponseDto> getAllTodos() {
-    return todoService.getAllTodos();
-  }
-
-  // 완료 할 일 목록 조회
-  @GetMapping("/completed")
-  public List<TodoResponseDto> getCompletedTodos() {
-    return todoService.getAllCompletedTodos();
-  }
-
-  // 미완료 할 일 목록 조회
-  @GetMapping("/pending")
-  public List<TodoResponseDto> getNotCompletedTodos() {
-    return todoService.getAllPendingTodos();
+  public List<TodoResponseDto> getTodosByStatus(
+      @RequestParam(value = "completed", required = false) Boolean completed) {
+    return todoService.getTodosByStatus(completed);
   }
 
   // 카테고리별 할 일 목록 조회
