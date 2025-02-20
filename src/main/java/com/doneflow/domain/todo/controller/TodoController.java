@@ -58,7 +58,7 @@ public class TodoController {
 
   // 카테고리별 할 일 목록 조회
   @GetMapping("/category")
-  public List<TodoResponseDto> getTodoByCategory(@RequestParam String category) {
+  public List<TodoResponseDto> getTodoByCategory(@RequestParam("category") String category) {
     return todoService.getAllTodosByCategory(category);
   }
 
