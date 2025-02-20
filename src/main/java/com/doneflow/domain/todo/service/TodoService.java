@@ -73,6 +73,21 @@ public class TodoService {
     return TodoResponseDto.from(todo);
   }
 
+  // 할 일 완료 여부 수정
+  @Transactional
+  public TodoResponseDto updateCompletedStatus(Long id, Boolean completed) {
+    if (completed == null) {
+      throw new CustomException(ErrorCode.INVALID_REQUEST);
+    }
+
+    Todo todo = todoRepository.findById(id)
+        .orElseThrow(() -> new CustomException(ErrorCode.TODO_NOT_FOUND));
+
+    todo.setCompleted(completed);
+
+    return TodoResponseDto.from(todo);
+  }
+
   // 할 일 삭제
   public void deleteTodo(Long id) {
     Todo todo = todoRepository.findById(id)

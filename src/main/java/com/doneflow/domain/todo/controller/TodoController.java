@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -56,6 +57,14 @@ public class TodoController {
   public TodoResponseDto updateTodo(
       @PathVariable("id") Long id, @Valid @RequestBody TodoRequestDto requestDto) {
     return todoService.updateTodo(id, requestDto);
+  }
+
+  // 할 일 완료 여부 수정
+  @PatchMapping("/{id}/completed")
+  public TodoResponseDto updateCompletedStatus(
+      @PathVariable Long id,
+      @RequestBody Boolean completed) {
+    return todoService.updateCompletedStatus(id, completed);
   }
 
   // 할 일 삭제
