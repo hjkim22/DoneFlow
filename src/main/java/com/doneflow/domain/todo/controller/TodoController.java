@@ -44,10 +44,10 @@ public class TodoController {
 
   // 할 일 목록 조회(완료 여부)
   @GetMapping
-  public List<TodoResponseDto> getTodosByStatus(
+  public List<TodoResponseDto> getSortedTodos(
       @RequestParam(value = "completed", required = false) Boolean completed,
       @RequestParam(name = "sortBy", defaultValue = "createdAt") String sortBy) {
-    return todoService.getTodosByStatus(completed, sortBy);
+    return todoService.getSortedTodos(completed, sortBy);
   }
 
   // 카테고리별 할 일 목록 조회

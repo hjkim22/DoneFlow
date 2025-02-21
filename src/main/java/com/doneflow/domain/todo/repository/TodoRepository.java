@@ -16,7 +16,7 @@ public interface TodoRepository extends JpaRepository<Todo, Long> {
       "CASE WHEN t.dueDate IS NULL THEN 1 ELSE 0 END END, " +
       "CASE WHEN :sortBy = 'dueDate' THEN t.dueDate END ASC, " +
       "t.createdAt DESC") // 동일한 마감기한이면 최근 할 일 먼저 정렬
-  List<Todo> findAllByCompleted(@Param("completed") Boolean completed,
+  List<Todo> findTodosByCompletedAndSort(@Param("completed") Boolean completed,
       @Param("sortBy") String sortBy);
 
   List<Todo> findAllByCategory(String category);

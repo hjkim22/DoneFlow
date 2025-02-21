@@ -40,10 +40,10 @@ public class TodoService {
   }
 
   // 할 일 목록 조회(완료 여부)
-  public List<TodoResponseDto> getTodosByStatus(Boolean completed, String sortBy) {
+  public List<TodoResponseDto> getSortedTodos(Boolean completed, String sortBy) {
     String sortField = "dueDate".equals(sortBy) ? "dueDate" : "createdAt";
 
-    List<Todo> todos = todoRepository.findAllByCompleted(completed, sortField);
+    List<Todo> todos = todoRepository.findTodosByCompletedAndSort(completed, sortField);
 
     return todos.stream()
         .map(TodoResponseDto::from)
