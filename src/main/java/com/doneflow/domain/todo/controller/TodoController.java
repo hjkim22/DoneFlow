@@ -7,8 +7,9 @@ import com.doneflow.domain.todo.dto.TodoRequestDto;
 import com.doneflow.domain.todo.dto.TodoResponseDto;
 import com.doneflow.domain.todo.service.TodoService;
 import jakarta.validation.Valid;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -42,18 +43,24 @@ public class TodoController {
     return todoService.getTodoById(id);
   }
 
-  // 할 일 목록 조회(완료 여부)
+  // 완료 여부에 따른 할 일 목록 조회 (페이징 + 정렬)
   @GetMapping
-  public List<TodoResponseDto> getSortedTodos(
+  public Page<TodoResponseDto> getTodos(
       @RequestParam(value = "completed", required = false) Boolean completed,
-      @RequestParam(name = "sortBy", defaultValue = "createdAt") String sortBy) {
-    return todoService.getSortedTodos(completed, sortBy);
+      @RequestParam(name = "sortBy", defaultValue = "createdAt") String sortBy,
+      @RequestParam(name = "order", defaultValue = "desc") String order,
+      Pageable pageable) {
+    return todoService.getTodos(completed, sortBy, order, pageable);
   }
 
-  // 카테고리별 할 일 목록 조회
+  // 카테고리에 따른 할 일 목록 조회 (페이징 + 정렬)
   @GetMapping("/category")
-  public List<TodoResponseDto> getTodoByCategory(@RequestParam("category") String category) {
-    return todoService.getAllTodosByCategory(category);
+  public Page<TodoResponseDto> getTodosByCategory(
+      @RequestParam(name = "category") String category,
+      @RequestParam(name = "sortBy", defaultValue = "createdAt") String sortBy,
+      @RequestParam(name = "order", defaultValue = "desc") String order,
+      Pageable pageable) {
+    return todoService.getTodosByCategory(category, sortBy, order, pageable);
   }
 
   // 할 일 수정

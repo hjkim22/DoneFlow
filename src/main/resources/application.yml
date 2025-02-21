@@ -12,3 +12,10 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
+
+  data:
+    web:
+      pageable:
+        default-page-size: 10
+        max-page-size: 50
+        one-indexed-parameters: true # 1부터 시작하는 페이지 번호 사용(기본은 0)

@@ -6,9 +6,9 @@ import com.doneflow.domain.todo.dto.TodoRequestDto;
 import com.doneflow.domain.todo.dto.TodoResponseDto;
 import com.doneflow.domain.todo.entity.Todo;
 import com.doneflow.domain.todo.repository.TodoRepository;
-import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,22 +39,18 @@ public class TodoService {
     return TodoResponseDto.from(todo);
   }
 
-  // 할 일 목록 조회(완료 여부)
-  public List<TodoResponseDto> getSortedTodos(Boolean completed, String sortBy) {
-    String sortField = "dueDate".equals(sortBy) ? "dueDate" : "createdAt";
-
-    List<Todo> todos = todoRepository.findTodosByCompletedAndSort(completed, sortField);
-
-    return todos.stream()
-        .map(TodoResponseDto::from)
-        .collect(Collectors.toList());
+  // 완료 여부에 따른 할 일 목록 조회 (페이징 + 정렬)
+  public Page<TodoResponseDto> getTodos(
+      Boolean completed, String sortBy, String order, Pageable pageable) {
+    return todoRepository.findPagedTodosByCompleted(completed, sortBy, order, pageable)
+        .map(TodoResponseDto::from);
   }
 
-  // 카테고리별 할 일 목록 조회
-  public List<TodoResponseDto> getAllTodosByCategory(String category) {
-    return todoRepository.findAllByCategory(category).stream()
-        .map(TodoResponseDto::from)
-        .collect(Collectors.toList());
+  // 카테고리에 따른 할 일 목록 조회 (페이징 + 정렬)
+  public Page<TodoResponseDto> getTodosByCategory(
+      String category, String sortBy, String order, Pageable pageable) {
+    return todoRepository.findPagedTodosByCategory(category, sortBy, order, pageable)
+        .map(TodoResponseDto::from);
   }
 
   // 할 일 수정
