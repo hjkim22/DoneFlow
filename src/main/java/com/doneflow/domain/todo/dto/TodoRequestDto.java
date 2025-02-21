@@ -1,6 +1,7 @@
 package com.doneflow.domain.todo.dto;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,5 +24,5 @@ public class TodoRequestDto {
 
   private LocalDateTime dueDate;
 
-  private String category;
+  private Long categoryId;
 }

@@ -1,5 +1,6 @@
 package com.doneflow.domain.todo.repository;
 
+import com.doneflow.domain.category.entity.Category;
 import com.doneflow.domain.todo.entity.Todo;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -34,7 +35,7 @@ public interface TodoRepository extends JpaRepository<Todo, Long> {
       "CASE WHEN :sortBy = 'createdAt' AND :order = 'asc' THEN t.createdAt END ASC, " +
       "CASE WHEN :sortBy = 'createdAt' AND :order = 'desc' THEN t.createdAt END DESC")
   Page<Todo> findPagedTodosByCategory(
-      @Param("category") String category,
+      @Param("category") Category category,
       @Param("sortBy") String sortBy,
       @Param("order") String order,
       Pageable pageable);

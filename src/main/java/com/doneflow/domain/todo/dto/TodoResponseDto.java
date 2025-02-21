@@ -16,7 +16,7 @@ public class TodoResponseDto {
   private String content;
   private boolean completed;
   private LocalDateTime dueDate;
-  private String category;
+  private String categoryName;
   private LocalDateTime createdAt;
   private LocalDateTime updatedAt;
 
@@ -27,7 +27,9 @@ public class TodoResponseDto {
         todo.getContent(),
         todo.isCompleted(),
         todo.getDueDate(),
-        todo.getCategory(),
+        todo.getCategory() != null && !"미분류".equals(todo.getCategory().getName())
+            ? todo.getCategory().getName()
+            : null,
         todo.getCreatedAt(),
         todo.getUpdatedAt()
     );
