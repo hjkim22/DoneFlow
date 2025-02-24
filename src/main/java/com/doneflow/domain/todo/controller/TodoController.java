@@ -58,26 +58,6 @@ public class TodoController {
     return todoService.searchTodos(keyword, completed, categoryId, sorting, pageable);
   }
 
-  // 완료 여부에 따른 할 일 목록 조회 (페이징 + 정렬)
-  @GetMapping
-  public Page<TodoResponseDto> getTodos(
-      @RequestParam(value = "completed", required = false) Boolean completed,
-      @RequestParam(name = "sortBy", defaultValue = "createdAt") String sortBy,
-      @RequestParam(name = "order", defaultValue = "desc") String order,
-      Pageable pageable) {
-    return todoService.getTodos(completed, sortBy, order, pageable);
-  }
-
-  // 카테고리에 따른 할 일 목록 조회 (페이징 + 정렬)
-  @GetMapping("/category")
-  public Page<TodoResponseDto> getTodosByCategory(
-      @RequestParam(name = "category") String category,
-      @RequestParam(name = "sortBy", defaultValue = "createdAt") String sortBy,
-      @RequestParam(name = "order", defaultValue = "desc") String order,
-      Pageable pageable) {
-    return todoService.getTodosByCategory(category, sortBy, order, pageable);
-  }
-
   // 할 일 수정
   @PutMapping("/{id}")
   public TodoResponseDto updateTodo(

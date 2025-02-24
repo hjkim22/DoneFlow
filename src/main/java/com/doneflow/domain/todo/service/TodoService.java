@@ -59,23 +59,6 @@ public class TodoService {
         .map(TodoResponseDto::from);
   }
 
-  // 완료 여부에 따른 할 일 목록 조회 (페이징 + 정렬)
-  public Page<TodoResponseDto> getTodos(
-      Boolean completed, String sortBy, String order, Pageable pageable) {
-    return todoRepository.findPagedTodosByCompleted(completed, sortBy, order, pageable)
-        .map(TodoResponseDto::from);
-  }
-
-  // 카테고리에 따른 할 일 목록 조회 (페이징 + 정렬)
-  public Page<TodoResponseDto> getTodosByCategory(
-      String categoryName, String sortBy, String order, Pageable pageable) {
-
-    Category category = categoryService.getCategoryByName(categoryName);
-
-    return todoRepository.findPagedTodosByCategory(category, sortBy, order, pageable)
-        .map(TodoResponseDto::from);
-  }
-
   // 할 일 수정
   @Transactional
   public TodoResponseDto updateTodo(Long id, TodoRequestDto requestDto) {
