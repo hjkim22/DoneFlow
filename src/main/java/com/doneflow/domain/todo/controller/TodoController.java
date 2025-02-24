@@ -51,10 +51,9 @@ public class TodoController {
       @RequestParam(name = "completed", required = false) Boolean completed,
       @RequestParam(name = "categoryId", required = false) Long categoryId,
       @RequestParam(name = "sort", defaultValue = "createdAt") String sort,
-      @RequestParam(name = "order", defaultValue = "desc") String order,
       Pageable pageable) {
 
-    Sort sorting = Sort.by(Sort.Direction.fromString(order), sort);
+    Sort sorting = Sort.by(sort);
     return todoService.searchTodos(keyword, completed, categoryId, sorting, pageable);
   }
 
