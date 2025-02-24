@@ -98,9 +98,9 @@ public class TodoRepositoryImpl implements TodoRepositoryCustom {
           orderSpecifiers.add(todo.createdAt.desc()); // NULL 여러 개면 최근 생성일 순 정렬
         }
         case "createdAt" -> orderSpecifiers.add(
-            (direction.isAscending()) ? todo.createdAt.asc() : todo.createdAt.desc());
+            (direction.isAscending()) ? todo.createdAt.desc() : todo.createdAt.asc());
         case "updatedAt" -> orderSpecifiers.add(
-            (direction.isAscending()) ? todo.updatedAt.asc() : todo.updatedAt.desc());
+            (direction.isAscending()) ? todo.updatedAt.desc() : todo.updatedAt.asc());
         default -> throw new IllegalArgumentException("Invalid sort field: " + sortField);
       }
     }
