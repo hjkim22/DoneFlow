@@ -26,18 +26,13 @@ public class TodoRepositoryImpl implements TodoRepositoryCustom {
   @Override
   public Page<Todo> searchTodos(
       String keyword, Boolean completed, Long categoryId, Sort sort, Pageable pageable) {
-    BooleanBuilder predicate = new BooleanBuilder();
 
-    if (keyword != null && !keyword.isBlank()) {
-      predicate.and(todo.title.containsIgnoreCase(keyword)
-          .or(todo.content.containsIgnoreCase(keyword)));
-    }
-    if (completed != null) {
-      predicate.and(todo.completed.eq(completed));
-    }
-    if (categoryId != null) {
-      predicate.and(todo.category.id.eq(categoryId));
-    }
+    BooleanBuilder predicate = new BooleanBuilder()
+        .and(keyword != null && !keyword.isBlank() ?
+            todo.title.containsIgnoreCase(keyword)
+                .or(todo.content.containsIgnoreCase(keyword)) : null)
+        .and(completed != null ? todo.completed.eq(completed) : null)
+        .and(categoryId != null ? todo.category.id.eq(categoryId) : null);
 
     // 기본 정렬 적용 (최신 생성순)
     if (sort.isEmpty()) {
@@ -68,8 +63,6 @@ public class TodoRepositoryImpl implements TodoRepositoryCustom {
   private List<OrderSpecifier<?>> getOrderSpecifiers(Sort sort) {
     List<OrderSpecifier<?>> orderSpecifiers = new ArrayList<>();
 
-    boolean hasDueDateSort = false;
-
     for (Sort.Order order : sort) {
       String sortField = order.getProperty().trim(); // 정렬 필드명 정리
       Sort.Direction direction = order.getDirection(); // 정렬 방향 처리
@@ -83,7 +76,6 @@ public class TodoRepositoryImpl implements TodoRepositoryCustom {
 
       switch (sortField) {
         case "dueDate" -> {
-          hasDueDateSort = true;
 
           // NULL 마지막으로 보내는 정렬
           NumberExpression<Integer> nullsLastOrder = Expressions.numberTemplate(Integer.class,
@@ -103,11 +95,6 @@ public class TodoRepositoryImpl implements TodoRepositoryCustom {
             (direction.isAscending()) ? todo.updatedAt.desc() : todo.updatedAt.asc());
         default -> throw new IllegalArgumentException("Invalid sort field: " + sortField);
       }
-    }
-
-    // sort=dueDate 없을 경우, 기본 정렬을 createdAt DESC 유지
-    if (!hasDueDateSort) {
-      orderSpecifiers.add(todo.createdAt.desc());
     }
 
     return orderSpecifiers;
