@@ -10,6 +10,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -41,6 +42,20 @@ public class TodoController {
   @GetMapping("/{id}")
   public TodoResponseDto getTodo(@PathVariable("id") Long id) {
     return todoService.getTodoById(id);
+  }
+
+  // 할 일 검색
+  @GetMapping("/search")
+  public Page<TodoResponseDto> searchTodos(
+      @RequestParam(name = "keyword", required = false) String keyword,
+      @RequestParam(name = "completed", required = false) Boolean completed,
+      @RequestParam(name = "categoryId", required = false) Long categoryId,
+      @RequestParam(name = "sort", defaultValue = "createdAt") String sort,
+      @RequestParam(name = "order", defaultValue = "desc") String order,
+      Pageable pageable) {
+
+    Sort sorting = Sort.by(Sort.Direction.fromString(order), sort);
+    return todoService.searchTodos(keyword, completed, categoryId, sorting, pageable);
   }
 
   // 완료 여부에 따른 할 일 목록 조회 (페이징 + 정렬)

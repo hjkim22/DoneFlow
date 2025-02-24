@@ -12,6 +12,7 @@ import com.doneflow.domain.todo.repository.TodoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -48,6 +49,14 @@ public class TodoService {
         .orElseThrow(() -> new CustomException(ErrorCode.TODO_NOT_FOUND));
 
     return TodoResponseDto.from(todo);
+  }
+
+  // 할 일 검색 (QueryDSL 기반)
+  @Transactional(readOnly = true)
+  public Page<TodoResponseDto> searchTodos(
+      String keyword, Boolean completed, Long categoryId, Sort sort, Pageable pageable) {
+    return todoRepository.searchTodos(keyword, completed, categoryId, sort, pageable)
+        .map(TodoResponseDto::from);
   }
 
   // 완료 여부에 따른 할 일 목록 조회 (페이징 + 정렬)
