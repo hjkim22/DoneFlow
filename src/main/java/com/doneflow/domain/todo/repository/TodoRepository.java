@@ -10,7 +10,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface TodoRepository extends JpaRepository<Todo, Long> {
+public interface TodoRepository extends JpaRepository<Todo, Long>, TodoRepositoryCustom {
 
   @Query("SELECT t FROM Todo t WHERE (:completed IS NULL OR t.completed = :completed) " +
       "ORDER BY " +
