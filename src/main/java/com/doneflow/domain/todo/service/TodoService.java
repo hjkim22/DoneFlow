@@ -31,13 +31,7 @@ public class TodoService {
   // 할 일 생성
   @Transactional
   public List<TodoResponseDto> createTodo(TodoRequestDto requestDto) {
-    Category category = (requestDto.getCategoryId() != null)
-        ? categoryRepository.findById(requestDto.getCategoryId())
-        .orElseThrow(() -> new CustomException(ErrorCode.CATEGORY_NOT_FOUND))
-        : categoryRepository.findByName("미분류")
-            .orElseGet(() -> categoryRepository.save(new Category(null, "미분류")));
-
-    List<Todo> createdTodos = new ArrayList<>();
+    Category category = getCategoryOrDefault(requestDto.getCategoryId());
 
     Todo todo = Todo.builder()
         .title(requestDto.getTitle())
@@ -49,12 +43,16 @@ public class TodoService {
             requestDto.getRepeatType() != null ? requestDto.getRepeatType() : RepeatType.NONE)
         .build();
 
-    createdTodos.add(todoRepository.save(todo));
+    todoRepository.save(todo);
+    List<Todo> createdTodos = new ArrayList<>(List.of(todo));
 
     int repeatCount = requestDto.getRepeatCount();
 
-    // 반복 일정 생성
-    if (todo.getRepeatType() != RepeatType.NONE && repeatCount > 0) {
+    // 반복 할 일 생성
+    if (todo.getRepeatType() != RepeatType.NONE) {
+      if (repeatCount <= 0) {
+        throw new CustomException(ErrorCode.INVALID_REPEAT_COUNT);
+      }
       createdTodos.addAll(createRepeatedTodos(todo, repeatCount));
     }
 
@@ -63,22 +61,17 @@ public class TodoService {
         .toList();
   }
 
-  // 반복 일정 자동 생성
+  // 반복 할 일 자동 생성
   private List<Todo> createRepeatedTodos(Todo originalTodo, int repeatCount) {
+    if (originalTodo.getDueDate() == null) {
+      throw new CustomException(ErrorCode.REPEAT_TODO_REQUIRES_DUE_DATE);
+    }
+
     List<Todo> repeatedTodos = new ArrayList<>();
     LocalDateTime dueDate = originalTodo.getDueDate();
 
-    if (dueDate == null || originalTodo.getRepeatType() == null) {
-      return repeatedTodos; // 마감 기한이 없는 경우 반복 일정 생성 X
-    }
-
     for (int i = 1; i <= repeatCount; i++) {
-      dueDate = switch (originalTodo.getRepeatType()) {
-        case DAILY -> dueDate.plusDays(1);
-        case WEEKLY -> dueDate.plusWeeks(1);
-        case MONTHLY -> dueDate.plusMonths(1);
-        default -> throw new IllegalArgumentException("지원되지 않는 반복 유형입니다: " + originalTodo.getRepeatType());
-      };
+      dueDate = calculateNextDueDate(dueDate, originalTodo.getRepeatType());
 
       Todo repeatedTodo = Todo.builder()
           .title(originalTodo.getTitle())
@@ -149,5 +142,24 @@ public class TodoService {
         .orElseThrow(() -> new CustomException(ErrorCode.TODO_NOT_FOUND));
 
     todoRepository.delete(todo);
+  }
+
+  // ===================== 헬퍼 메서드 =====================
+
+  private Category getCategoryOrDefault(Long categoryId) {
+    return (categoryId != null)
+        ? categoryRepository.findById(categoryId)
+        .orElseThrow(() -> new CustomException(ErrorCode.CATEGORY_NOT_FOUND))
+        : categoryRepository.findByName("미분류")
+            .orElseGet(() -> categoryRepository.save(new Category(null, "미분류")));
+  }
+
+  private LocalDateTime calculateNextDueDate(LocalDateTime dueDate, RepeatType repeatType) {
+    return switch (repeatType) {
+      case DAILY -> dueDate.plusDays(1);
+      case WEEKLY -> dueDate.plusWeeks(1);
+      case MONTHLY -> dueDate.plusMonths(1);
+      default -> throw new CustomException(ErrorCode.UNSUPPORTED_REPEAT_TYPE);
+    };
   }
 }
