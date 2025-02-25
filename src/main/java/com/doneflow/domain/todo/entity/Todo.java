@@ -1,9 +1,12 @@
 package com.doneflow.domain.todo.entity;
 
+import com.doneflow.common.enums.RepeatType;
 import com.doneflow.common.base.BaseTimeEntity;
 import com.doneflow.domain.category.entity.Category;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -41,10 +44,14 @@ public class Todo extends BaseTimeEntity {
 
   private LocalDateTime dueDate; // 마감 기한
 
-  @Setter
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "category_id")
   private Category category;
+
+  @Enumerated(EnumType.STRING)
+  private RepeatType repeatType = RepeatType.NONE; // 반복 유형
+
+  private int repeatCount; // 반복 횟수 (최대 12)
 
   public void setCategoryWithDefault(Category category) {
     this.category = (category != null) ? category : new Category(0L, "미분류");
