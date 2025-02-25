@@ -37,8 +37,6 @@ public class QTodo extends EntityPathBase<Todo> {
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
-    public final NumberPath<Integer> repeatCount = createNumber("repeatCount", Integer.class);
-
     public final EnumPath<com.doneflow.common.enums.RepeatType> repeatType = createEnum("repeatType", com.doneflow.common.enums.RepeatType.class);
 
     public final StringPath title = createString("title");

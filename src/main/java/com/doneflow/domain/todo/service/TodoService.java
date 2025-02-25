@@ -1,5 +1,6 @@
 package com.doneflow.domain.todo.service;
 
+import com.doneflow.common.enums.RepeatType;
 import com.doneflow.common.exception.CustomException;
 import com.doneflow.common.exception.ErrorCode;
 import com.doneflow.domain.category.entity.Category;
@@ -9,6 +10,9 @@ import com.doneflow.domain.todo.dto.TodoRequestDto;
 import com.doneflow.domain.todo.dto.TodoResponseDto;
 import com.doneflow.domain.todo.entity.Todo;
 import com.doneflow.domain.todo.repository.TodoRepository;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -25,12 +29,15 @@ public class TodoService {
   private final CategoryRepository categoryRepository;
 
   // 할 일 생성
-  public TodoResponseDto createTodo(TodoRequestDto requestDto) {
+  @Transactional
+  public List<TodoResponseDto> createTodo(TodoRequestDto requestDto) {
     Category category = (requestDto.getCategoryId() != null)
         ? categoryRepository.findById(requestDto.getCategoryId())
         .orElseThrow(() -> new CustomException(ErrorCode.CATEGORY_NOT_FOUND))
         : categoryRepository.findByName("미분류")
             .orElseGet(() -> categoryRepository.save(new Category(null, "미분류")));
+
+    List<Todo> createdTodos = new ArrayList<>();
 
     Todo todo = Todo.builder()
         .title(requestDto.getTitle())
@@ -38,9 +45,54 @@ public class TodoService {
         .completed(requestDto.isCompleted())
         .dueDate(requestDto.getDueDate())
         .category(category)
+        .repeatType(
+            requestDto.getRepeatType() != null ? requestDto.getRepeatType() : RepeatType.NONE)
         .build();
 
-    return TodoResponseDto.from(todoRepository.save(todo));
+    createdTodos.add(todoRepository.save(todo));
+
+    int repeatCount = requestDto.getRepeatCount();
+
+    // 반복 일정 생성
+    if (todo.getRepeatType() != RepeatType.NONE && repeatCount > 0) {
+      createdTodos.addAll(createRepeatedTodos(todo, repeatCount));
+    }
+
+    return createdTodos.stream()
+        .map(TodoResponseDto::from)
+        .toList();
+  }
+
+  // 반복 일정 자동 생성
+  private List<Todo> createRepeatedTodos(Todo originalTodo, int repeatCount) {
+    List<Todo> repeatedTodos = new ArrayList<>();
+    LocalDateTime dueDate = originalTodo.getDueDate();
+
+    if (dueDate == null || originalTodo.getRepeatType() == null) {
+      return repeatedTodos; // 마감 기한이 없는 경우 반복 일정 생성 X
+    }
+
+    for (int i = 1; i <= repeatCount; i++) {
+      dueDate = switch (originalTodo.getRepeatType()) {
+        case DAILY -> dueDate.plusDays(1);
+        case WEEKLY -> dueDate.plusWeeks(1);
+        case MONTHLY -> dueDate.plusMonths(1);
+        default -> throw new IllegalArgumentException("지원되지 않는 반복 유형입니다: " + originalTodo.getRepeatType());
+      };
+
+      Todo repeatedTodo = Todo.builder()
+          .title(originalTodo.getTitle())
+          .content(originalTodo.getContent())
+          .completed(false)
+          .dueDate(dueDate)
+          .category(originalTodo.getCategory())
+          .repeatType(RepeatType.NONE)
+          .build();
+
+      repeatedTodos.add(todoRepository.save(repeatedTodo));
+    }
+
+    return repeatedTodos;
   }
 
   // 할 일 조회

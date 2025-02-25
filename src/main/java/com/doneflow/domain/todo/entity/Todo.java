@@ -51,8 +51,6 @@ public class Todo extends BaseTimeEntity {
   @Enumerated(EnumType.STRING)
   private RepeatType repeatType = RepeatType.NONE; // 반복 유형
 
-  private int repeatCount; // 반복 횟수 (최대 12)
-
   public void setCategoryWithDefault(Category category) {
     this.category = (category != null) ? category : new Category(0L, "미분류");
   }

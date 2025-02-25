@@ -7,6 +7,7 @@ import com.doneflow.domain.todo.dto.TodoRequestDto;
 import com.doneflow.domain.todo.dto.TodoResponseDto;
 import com.doneflow.domain.todo.service.TodoService;
 import jakarta.validation.Valid;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -34,7 +35,7 @@ public class TodoController {
   // 할 일 생성
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
-  public TodoResponseDto createTodo(@Valid @RequestBody TodoRequestDto requestDto) {
+  public List<TodoResponseDto> createTodo(@Valid @RequestBody TodoRequestDto requestDto) {
     return todoService.createTodo(requestDto);
   }
 
