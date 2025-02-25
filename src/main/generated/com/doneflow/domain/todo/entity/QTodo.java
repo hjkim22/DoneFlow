@@ -44,6 +44,8 @@ public class QTodo extends EntityPathBase<Todo> {
     //inherited
     public final DateTimePath<java.time.LocalDateTime> updatedAt = _super.updatedAt;
 
+    public final com.doneflow.domain.user.entity.QUser user;
+
     public QTodo(String variable) {
         this(Todo.class, forVariable(variable), INITS);
     }
@@ -63,6 +65,7 @@ public class QTodo extends EntityPathBase<Todo> {
     public QTodo(Class<? extends Todo> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
         this.category = inits.isInitialized("category") ? new com.doneflow.domain.category.entity.QCategory(forProperty("category")) : null;
+        this.user = inits.isInitialized("user") ? new com.doneflow.domain.user.entity.QUser(forProperty("user")) : null;
     }
 
 }

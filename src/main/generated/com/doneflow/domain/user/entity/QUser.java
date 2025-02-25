@@ -7,6 +7,7 @@ import com.querydsl.core.types.dsl.*;
 import com.querydsl.core.types.PathMetadata;
 import javax.annotation.processing.Generated;
 import com.querydsl.core.types.Path;
+import com.querydsl.core.types.dsl.PathInits;
 
 
 /**
@@ -33,6 +34,8 @@ public class QUser extends EntityPathBase<User> {
     public final StringPath password = createString("password");
 
     public final EnumPath<com.doneflow.common.enums.Role> role = createEnum("role", com.doneflow.common.enums.Role.class);
+
+    public final ListPath<com.doneflow.domain.todo.entity.Todo, com.doneflow.domain.todo.entity.QTodo> todos = this.<com.doneflow.domain.todo.entity.Todo, com.doneflow.domain.todo.entity.QTodo>createList("todos", com.doneflow.domain.todo.entity.Todo.class, com.doneflow.domain.todo.entity.QTodo.class, PathInits.DIRECT2);
 
     //inherited
     public final DateTimePath<java.time.LocalDateTime> updatedAt = _super.updatedAt;

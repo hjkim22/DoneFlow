@@ -3,6 +3,7 @@ package com.doneflow.domain.todo.entity;
 import com.doneflow.common.enums.RepeatType;
 import com.doneflow.common.base.BaseTimeEntity;
 import com.doneflow.domain.category.entity.Category;
+import com.doneflow.domain.user.entity.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -50,6 +51,10 @@ public class Todo extends BaseTimeEntity {
 
   @Enumerated(EnumType.STRING)
   private RepeatType repeatType = RepeatType.NONE; // 반복 유형
+
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "user_id", nullable = false) // 유저와 연결 (N:1 관계)
+  private User user;
 
   public void setCategoryWithDefault(Category category) {
     this.category = (category != null) ? category : new Category(0L, "미분류");
