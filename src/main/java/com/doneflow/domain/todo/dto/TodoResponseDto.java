@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class TodoResponseDto {
 
+  private Long userId;
   private Long id;
   private String title;
   private String content;
@@ -26,6 +27,7 @@ public class TodoResponseDto {
     boolean isRepeatedInstance = todo.getRepeatType() == RepeatType.NONE;
 
     return new TodoResponseDto(
+        todo.getUser().getId(),
         todo.getId(),
         todo.getTitle(),
         todo.getContent(),

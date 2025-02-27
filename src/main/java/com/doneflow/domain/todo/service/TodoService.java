@@ -10,6 +10,8 @@ import com.doneflow.domain.todo.dto.TodoRequestDto;
 import com.doneflow.domain.todo.dto.TodoResponseDto;
 import com.doneflow.domain.todo.entity.Todo;
 import com.doneflow.domain.todo.repository.TodoRepository;
+import com.doneflow.domain.user.entity.User;
+import com.doneflow.domain.user.repository.UserRepository;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,13 +29,18 @@ public class TodoService {
   private final TodoRepository todoRepository;
   private final CategoryService categoryService;
   private final CategoryRepository categoryRepository;
+  private final UserRepository userRepository;
 
   // 할 일 생성
   @Transactional
   public List<TodoResponseDto> createTodo(TodoRequestDto requestDto) {
+    User user = userRepository.findById(requestDto.getUserId())
+        .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
     Category category = getCategoryOrDefault(requestDto.getCategoryId());
 
     Todo todo = Todo.builder()
+        .user(user)
         .title(requestDto.getTitle())
         .content(requestDto.getContent())
         .completed(requestDto.isCompleted())
