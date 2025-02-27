@@ -17,7 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
 public class AuthService {
 
   private final UserRepository userRepository;
@@ -62,6 +61,7 @@ public class AuthService {
   }
 
   // Refresh Token 이용한 토큰 재발급
+  @Transactional
   public AuthResponseDto refreshToken(String refreshToken) {
     if (!jwtProvider.isValidToken(refreshToken)) {
       throw new CustomException(ErrorCode.INVALID_REFRESH_TOKEN);
