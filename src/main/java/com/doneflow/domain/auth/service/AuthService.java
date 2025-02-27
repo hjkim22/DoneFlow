@@ -6,6 +6,7 @@ import com.doneflow.common.exception.ErrorCode;
 import com.doneflow.domain.auth.dto.AuthLoginRequestDto;
 import com.doneflow.domain.auth.dto.AuthRegisterRequestDto;
 import com.doneflow.domain.auth.dto.AuthResponseDto;
+import com.doneflow.domain.auth.dto.UserRegisterResponseDto;
 import com.doneflow.domain.user.entity.User;
 import com.doneflow.domain.user.repository.UserRepository;
 import com.doneflow.security.JwtProvider;
@@ -25,7 +26,7 @@ public class AuthService {
 
   // 회원가입
   @Transactional
-  public void register(AuthRegisterRequestDto request) {
+  public UserRegisterResponseDto register(AuthRegisterRequestDto request) {
     if (userRepository.existsByEmail(request.getEmail())) {
       throw new CustomException(ErrorCode.EMAIL_ALREADY_EXISTS);
     }
@@ -40,6 +41,8 @@ public class AuthService {
         .build();
 
     userRepository.save(user);
+
+    return UserRegisterResponseDto.from(user);
   }
 
   // 로그인 & JWT 토큰 발급
