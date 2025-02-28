@@ -19,7 +19,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -43,7 +42,7 @@ public class JwtProvider {
   // Access Token 생성
   public String generateAccessToken(Long userId, Role role) {
     return Jwts.builder()
-        .claim(CLAIM_USER_ID, userId)
+        .setSubject(String.valueOf(userId))
         .claim(CLAIM_ROLES, role.name())
         .setIssuedAt(new Date())
         .setExpiration(new Date(System.currentTimeMillis() + ACCESS_TOKEN_EXPIRATION))
@@ -54,11 +53,16 @@ public class JwtProvider {
   // Refresh Token 생성
   public String generateRefreshToken(Long userId) {
     return Jwts.builder()
-        .claim(CLAIM_USER_ID, userId)  // 리프레시 토큰에는 역할 정보 없음
+        .setSubject(String.valueOf(userId))
         .setIssuedAt(new Date())
         .setExpiration(new Date(System.currentTimeMillis() + REFRESH_TOKEN_EXPIRATION))
         .signWith(getSigningKey())
         .compact();
+  }
+
+  // 토큰에서 userId 추출
+  public Long getUserIdFromToken(String token) {
+    return Long.valueOf(getClaims(token).getSubject());
   }
 
   // 토큰에서 인증 객체 추출 (Spring Security 연동)
@@ -67,9 +71,8 @@ public class JwtProvider {
     Role role = Role.valueOf(getClaims(token).get(CLAIM_ROLES).toString());
 
     SimpleGrantedAuthority authority = new SimpleGrantedAuthority("ROLE_" + role.name());
-    User principal = new User(userId.toString(), "", Collections.singletonList(authority));
 
-    return new UsernamePasswordAuthenticationToken(principal, token, Collections.singletonList(authority));
+    return new UsernamePasswordAuthenticationToken(userId, null, Collections.singletonList(authority));
   }
 
   // 토큰에서 사용자 ID 추출
