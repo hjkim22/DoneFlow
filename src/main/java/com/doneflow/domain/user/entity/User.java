@@ -59,6 +59,10 @@ public class User extends BaseTimeEntity {
     }
   }
 
+  public void updatePassword(String encodedPassword) {
+    this.password = encodedPassword;
+  }
+
   // Todo 추가 메서드 (양방향 연관관계 편의 메서드)
   public void addTodo(Todo todo) {
     this.todos.add(todo);
