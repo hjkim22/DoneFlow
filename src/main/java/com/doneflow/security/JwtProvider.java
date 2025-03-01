@@ -27,7 +27,6 @@ import org.springframework.stereotype.Component;
 public class JwtProvider {
 
   private static final String CLAIM_ROLES = "roles";
-  private static final String CLAIM_USER_ID = "userId";
   private static final long ACCESS_TOKEN_EXPIRATION = 1000 * 60 * 60; // 1시간
   private static final long REFRESH_TOKEN_EXPIRATION = 1000 * 60 * 60 * 24 * 7; // 7일
 
@@ -43,7 +42,7 @@ public class JwtProvider {
   public String generateAccessToken(Long userId, Role role) {
     return Jwts.builder()
         .setSubject(String.valueOf(userId))
-        .claim(CLAIM_ROLES, role.name())
+        .claim(CLAIM_ROLES, "ROLE_" + role.name())
         .setIssuedAt(new Date())
         .setExpiration(new Date(System.currentTimeMillis() + ACCESS_TOKEN_EXPIRATION))
         .signWith(getSigningKey())
@@ -67,17 +66,16 @@ public class JwtProvider {
 
   // 토큰에서 인증 객체 추출 (Spring Security 연동)
   public Authentication getAuthentication(String token) {
-    Long userId = extractUserIdFromToken(token);
-    Role role = Role.valueOf(getClaims(token).get(CLAIM_ROLES).toString());
+    Long userId = getUserIdFromToken(token);
+    String roleClaim = getClaims(token).get(CLAIM_ROLES, String.class);
 
-    SimpleGrantedAuthority authority = new SimpleGrantedAuthority("ROLE_" + role.name());
+    if (roleClaim == null) {
+      throw new IllegalStateException("JWT 에서 roles 클레임을 찾을 수 없습니다.");
+    }
+
+    SimpleGrantedAuthority authority = new SimpleGrantedAuthority(roleClaim);
 
     return new UsernamePasswordAuthenticationToken(userId, null, Collections.singletonList(authority));
-  }
-
-  // 토큰에서 사용자 ID 추출
-  public Long extractUserIdFromToken(String token) {
-    return Long.valueOf(getClaims(token).get(CLAIM_USER_ID).toString());
   }
 
   // 토큰 유효성 검사 (최신 jjwt 1.0.0 방식)

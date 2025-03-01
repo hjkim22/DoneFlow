@@ -67,7 +67,7 @@ public class AuthService {
       throw new CustomException(ErrorCode.INVALID_REFRESH_TOKEN);
     }
 
-    Long userId = jwtProvider.extractUserIdFromToken(refreshToken);
+    Long userId = jwtProvider.getUserIdFromToken(refreshToken);
     User user = userRepository.findById(userId)
         .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 

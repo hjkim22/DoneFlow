@@ -29,8 +29,8 @@ public class SecurityConfig {
             SessionCreationPolicy.STATELESS)) // 세션 사용 안 함 (JWT 방식 적용)
         .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/auth/**").permitAll() // 회원가입, 로그인
-                .requestMatchers("/api/users/**").hasRole("USER")  // 일반 유저만 접근 가능
-                .requestMatchers("/api/admin/**").hasRole("ADMIN") // 관리자만 접근 가능
+                .requestMatchers("/api/users/**").hasAuthority("ROLE_USER")  // 일반 유저만 접근 가능
+                .requestMatchers("/api/admin/**").hasAuthority("ROLE_ADMIN") // 관리자만 접근 가능
                 .anyRequest().authenticated()
 //            .anyRequest().permitAll() // 임시
         )
