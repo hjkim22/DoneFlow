@@ -1,5 +1,6 @@
 package com.doneflow.domain.user.controller;
 
+import com.doneflow.common.annotation.CurrentUserId;
 import com.doneflow.domain.user.dto.UserChangePasswordDto;
 import com.doneflow.domain.user.dto.UserInfoResponseDto;
 import com.doneflow.domain.user.dto.UserUpdateInfoDto;
@@ -9,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,30 +24,30 @@ public class UserController {
   private final UserService userService;
 
   // 정보 조회
-  @GetMapping("/{userId}")
-  public UserInfoResponseDto getUserById(@PathVariable("userId") Long userId) {
+  @GetMapping("/me")
+  public UserInfoResponseDto getUserById(@CurrentUserId Long userId) {
     return userService.getUserById(userId);
   }
 
   // 정보 수정
-  @PutMapping("/{userId}")
+  @PutMapping("/me")
   public UserInfoResponseDto updateUserInfo(
-      @PathVariable("userId") Long userId, @Valid @RequestBody UserUpdateInfoDto requestDto) {
+      @CurrentUserId Long userId, @Valid @RequestBody UserUpdateInfoDto requestDto) {
     return userService.updateUserInfo(userId, requestDto);
   }
 
   // 비밀번호 변경
-  @PutMapping("/{userId}/password")
+  @PutMapping("/me/password")
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void changePassword(
-      @PathVariable("userId") Long userId, @RequestBody UserChangePasswordDto requestDto) {
+      @CurrentUserId Long userId, @RequestBody UserChangePasswordDto requestDto) {
     userService.changePassword(userId, requestDto);
   }
 
   // 회원 탈퇴
-  @DeleteMapping("/{userId}")
+  @DeleteMapping("/me")
   @ResponseStatus(HttpStatus.NO_CONTENT)
-  public void deleteUser(@PathVariable("userId") Long userId) {
+  public void deleteUser(@CurrentUserId Long userId) {
     userService.deleteUser(userId);
   }
 }
