@@ -4,7 +4,6 @@ import com.doneflow.common.enums.RepeatType;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,9 +15,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class TodoRequestDto {
-
-  @NotNull(message = "유저 ID는 필수입니다.")
-  private Long userId;
 
   @NotBlank(message = "제목은 필수입니다.")
   private String title;
