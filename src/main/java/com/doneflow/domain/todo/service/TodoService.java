@@ -33,8 +33,8 @@ public class TodoService {
 
   // 할 일 생성
   @Transactional
-  public List<TodoResponseDto> createTodo(TodoRequestDto requestDto) {
-    User user = userRepository.findById(requestDto.getUserId())
+  public List<TodoResponseDto> createTodo(Long userId, TodoRequestDto requestDto) {
+    User user = userRepository.findById(userId)
         .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
     Category category = getCategoryOrDefault(requestDto.getCategoryId());
@@ -96,14 +96,12 @@ public class TodoService {
   }
 
   // 할 일 조회
-  public TodoResponseDto getTodoById(Long id) {
-    Todo todo = todoRepository.findById(id)
-        .orElseThrow(() -> new CustomException(ErrorCode.TODO_NOT_FOUND));
-
+  public TodoResponseDto getTodoById(Long id, Long userId) {
+    Todo todo = getTodoIfOwner(id, userId);
     return TodoResponseDto.from(todo);
   }
 
-  // 할 일 검색 (QueryDSL 기반)
+  // 할 일 검색 (QueryDSL)
   @Transactional(readOnly = true)
   public Page<TodoResponseDto> searchTodos(
       String keyword, Boolean completed, Long categoryId, Sort sort, Pageable pageable) {
@@ -113,10 +111,8 @@ public class TodoService {
 
   // 할 일 수정
   @Transactional
-  public TodoResponseDto updateTodo(Long id, TodoRequestDto requestDto) {
-    Todo todo = todoRepository.findById(id)
-        .orElseThrow(() -> new CustomException(ErrorCode.TODO_NOT_FOUND));
-
+  public TodoResponseDto updateTodo(Long id, Long userId, TodoRequestDto requestDto) {
+    Todo todo = getTodoIfOwner(id, userId);
     Category category = categoryService.getCategoryById(requestDto.getCategoryId());
 
     todo.setTitle(requestDto.getTitle());
@@ -130,28 +126,35 @@ public class TodoService {
 
   // 할 일 완료 여부 수정
   @Transactional
-  public TodoResponseDto updateCompletedStatus(Long id, Boolean completed) {
+  public TodoResponseDto updateCompletedStatus(Long id, Long userId, Boolean completed) {
     if (completed == null) {
       throw new CustomException(ErrorCode.INVALID_REQUEST);
     }
 
-    Todo todo = todoRepository.findById(id)
-        .orElseThrow(() -> new CustomException(ErrorCode.TODO_NOT_FOUND));
-
+    Todo todo = getTodoIfOwner(id, userId);
     todo.setCompleted(completed);
 
     return TodoResponseDto.from(todo);
   }
 
   // 할 일 삭제
-  public void deleteTodo(Long id) {
-    Todo todo = todoRepository.findById(id)
-        .orElseThrow(() -> new CustomException(ErrorCode.TODO_NOT_FOUND));
-
+  public void deleteTodo(Long id, Long userId) {
+    Todo todo = getTodoIfOwner(id, userId);
     todoRepository.delete(todo);
   }
 
   // ===================== 헬퍼 메서드 =====================
+
+  private Todo getTodoIfOwner(Long todoId, Long userId) {
+    Todo todo = todoRepository.findById(todoId)
+        .orElseThrow(() -> new CustomException(ErrorCode.TODO_NOT_FOUND));
+
+    if (!todo.getUser().getId().equals(userId)) {
+      throw new CustomException(ErrorCode.UNAUTHORIZED_ACCESS);
+    }
+
+    return todo;
+  }
 
   private Category getCategoryOrDefault(Long categoryId) {
     return (categoryId != null)
