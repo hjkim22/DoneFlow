@@ -1,5 +1,6 @@
 package com.doneflow.domain.todo.controller;
 
+import com.doneflow.common.annotation.CurrentUserId;
 import com.doneflow.common.exception.CustomException;
 import com.doneflow.common.exception.ErrorCode;
 import com.doneflow.domain.todo.dto.TodoCompletedDto;
@@ -35,14 +36,16 @@ public class TodoController {
   // 할 일 생성
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
-  public List<TodoResponseDto> createTodo(@Valid @RequestBody TodoRequestDto requestDto) {
-    return todoService.createTodo(requestDto);
+  public List<TodoResponseDto> createTodo(
+      @CurrentUserId Long userId, @Valid @RequestBody TodoRequestDto requestDto) {
+    return todoService.createTodo(userId, requestDto);
   }
 
   // 할 일 조회
   @GetMapping("/{id}")
-  public TodoResponseDto getTodo(@PathVariable("id") Long id) {
-    return todoService.getTodoById(id);
+  public TodoResponseDto getTodo(
+      @CurrentUserId Long userId, @PathVariable("id") Long id) {
+    return todoService.getTodoById(id, userId);
   }
 
   // 할 일 검색
@@ -61,23 +64,25 @@ public class TodoController {
   // 할 일 수정
   @PutMapping("/{id}")
   public TodoResponseDto updateTodo(
+      @CurrentUserId Long userId,
       @PathVariable("id") Long id, @Valid @RequestBody TodoRequestDto requestDto) {
-    return todoService.updateTodo(id, requestDto);
+    return todoService.updateTodo(id, userId, requestDto);
   }
 
   // 할 일 완료 여부 수정
   @PatchMapping("/{id}/completed")
   public TodoResponseDto updateCompletedStatus(
+      @CurrentUserId Long userId,
       @PathVariable("id") Long id,
       @Valid @RequestBody TodoCompletedDto requestDto) {
-    return todoService.updateCompletedStatus(id, requestDto.getCompleted());
+    return todoService.updateCompletedStatus(id, userId, requestDto.getCompleted());
   }
 
   // 할 일 삭제
   @DeleteMapping("/{id}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
-  public void deleteTodo(@PathVariable("id") Long id) {
-    todoService.deleteTodo(id);
+  public void deleteTodo(@CurrentUserId Long userId, @PathVariable("id") Long id) {
+    todoService.deleteTodo(id, userId);
   }
 
   // ================== 예외 처리 테스트 ==================
